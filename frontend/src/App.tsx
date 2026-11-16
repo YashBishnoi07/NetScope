@@ -18,6 +18,15 @@ import type { Alert, FlowRecord, Overview, PacketSummary } from './types';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Filler, Tooltip, Legend);
 
+const API_URL =
+  (import.meta as unknown as { env: Record<string, string | undefined> }).env.VITE_API_URL ??
+  'http://localhost:8000';
+const originalFetch = window.fetch.bind(window);
+window.fetch = (input: RequestInfo | URL, init?: RequestInit) =>
+  originalFetch(
+    typeof input === 'string' ? input.replace('http://localhost:8000', API_URL) : input,
+    init,
+  );
 type AlertSummary = {
   by_severity: Record<string, number>;
   timeline: Array<{ bucket: string; count: number }>;
